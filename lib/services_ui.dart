@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:tflite/tflite.dart';
 
 class services_ui extends StatefulWidget {
 
@@ -12,19 +14,51 @@ class services_ui extends StatefulWidget {
 class _services_uiState extends State<services_ui> {
 
   CameraController camera;
+  bool isDetecting=false;
 
   @override
   void initState() {
     super.initState();
-    startCamera();
+    startServices();
   }
 
-  void startCamera() async{
+void startServices()async {
+  await loadModel();
+}
+  Future<void> loadModel() async{
+    await Tflite.loadModel(
+      model: "assets/model_unquant.tflite",
+      labels: "assets/labels.txt",
+      );
+    await startCamera();
+  }
+
+  Future<void> startCamera() async{
+    print("in startCamera");
     camera=CameraController(await getFrontCamera(),ResolutionPreset.low);
     await camera.initialize();
-    camera.startImageStream((image){
-      //Heres the image  TODO
+    camera.startImageStream((image){ 
+      if(isDetecting==false){
+       isDetecting=true;
+       runModel(image);
+      }
     });
+  }
+
+  Future<void> runModel(CameraImage img)async{
+    var output=await Tflite.runModelOnFrame(
+      bytesList: img.planes.map((plane) {return plane.bytes;}).toList(),
+      imageHeight: img.height,
+      imageWidth: img.width,
+      imageMean: 127.5,   
+      imageStd: 127.5,    
+      rotation: 90,       
+      numResults: 2,      
+      threshold: 0.1,     
+      asynch: true        
+      );
+      print('Status is ${output[0]["label"]}');
+      isDetecting=false;
   }
 
   Future<CameraDescription> getFrontCamera ()async{
