@@ -23,7 +23,6 @@ void showNotification()async{
   }
 
   Future<void> startCamera() async {
-    print("in startCamera");
     camera = CameraController(await getFrontCamera(), ResolutionPreset.low);
     await camera.initialize();
     camera.startImageStream((image) {
