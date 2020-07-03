@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'package:tflite/tflite.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'services.dart';
 
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  CameraController camera;
+  bool isDetecting = false;
+  bool serviceStatus = false;
+  
 class services_ui extends StatefulWidget {
   static const id = 'services_ui';
 
@@ -11,10 +16,8 @@ class services_ui extends StatefulWidget {
 }
 
 class _services_uiState extends State<services_ui> {
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-  CameraController camera;
-  bool isDetecting = false;
-  bool serviceStatus = false;
+
+  String buttonName="Start";
 
   @override
   void initState() {
@@ -24,62 +27,6 @@ class _services_uiState extends State<services_ui> {
     var initializeSettings=InitializationSettings(initializeSettingsAndroid, initializeSettingsIOS);
     flutterLocalNotificationsPlugin=FlutterLocalNotificationsPlugin();
     flutterLocalNotificationsPlugin.initialize(initializeSettings);
-    startServices();//Key to start
-  }
-
-  void showNotification()async{
-    var androidChannelSpecifics=AndroidNotificationDetails('channelId', 'channelName', 'channelDescription',importance: Importance.Max,priority: Priority.High);
-    var IOSChannelSpecifics=IOSNotificationDetails();
-    var platformChannelSpecifics=NotificationDetails(androidChannelSpecifics,IOSChannelSpecifics);
-    await flutterLocalNotificationsPlugin.show(0, 'Alert', 'Face touch detected!', platformChannelSpecifics);
-  }
-
-  void startServices() async {
-    await loadModel();
-  }
-
-  Future<void> loadModel() async {
-    await Tflite.loadModel(
-      model: "assets/model_unquant.tflite",
-      labels: "assets/labels.txt",
-    );
-    await startCamera();
-  }
-
-  Future<void> startCamera() async {
-    print("in startCamera");
-    camera = CameraController(await getFrontCamera(), ResolutionPreset.low);
-    await camera.initialize();
-    camera.startImageStream((image) {
-      if (isDetecting == false) {
-        isDetecting = true;
-        runModel(image);
-      }
-    });
-  }
-
-  Future<void> runModel(CameraImage img) async {
-    var output = await Tflite.runModelOnFrame(
-        bytesList: img.planes.map((plane) {
-          return plane.bytes;
-        }).toList(),
-        imageHeight: img.height,
-        imageWidth: img.width,
-        imageMean: 127.5,
-        imageStd: 127.5,
-        rotation: 90,
-        numResults: 2,
-        threshold: 0.1,
-        asynch: true);
-    print('Status is ${output[0]["label"]}');
-    //TODO show notification
-    // showNotification();
-    isDetecting = false;
-  }
-
-  Future<CameraDescription> getFrontCamera() async {
-    return await availableCameras().then((cameras) => cameras
-        .firstWhere((name) => name.lensDirection == CameraLensDirection.front));
   }
 
   @override
@@ -90,8 +37,18 @@ class _services_uiState extends State<services_ui> {
           child: GestureDetector(
             onTap: () {
               if (serviceStatus == false) {
-                serviceStatus = true;
                 startServices();
+                serviceStatus = true;
+                setState(() {
+                  buttonName="Stop";
+                });
+              }
+              else{
+                stopServices();
+                serviceStatus=false;
+                setState(() {
+                  buttonName="Start";
+                });
               }
             },
             child: Container(
@@ -102,7 +59,7 @@ class _services_uiState extends State<services_ui> {
                 borderRadius: BorderRadius.all(Radius.circular(20)),
               ),
               child: FittedBox(
-                child: Text('Start Services',style: TextStyle(color: Colors.white),),
+                child: Text(buttonName,style: TextStyle(color: Colors.white),),
               ),
             ),
           ),
