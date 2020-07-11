@@ -1,3 +1,4 @@
+import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:tflite/tflite.dart';
@@ -11,7 +12,14 @@ void showNotification()async{
   }
 
   void startServices() async {
-    await loadModel();
+    await AndroidAlarmManager.initialize();
+    await AndroidAlarmManager.oneShot(const Duration(seconds: 1), 0, printer);
+    // await loadModel();
+  }
+
+  void printer(){
+    for(int i=0;i<100;i++)
+      print("i");
   }
 
   Future<void> loadModel() async {
@@ -47,8 +55,8 @@ void showNotification()async{
         threshold: 0.1,
         asynch: true);
     var outputStatus=output[0]["label"];
-    // print('Status is ${output[0]["label"]}');
-    if(outputStatus=="0 Touches")
+    print('Status is ${output[0]["label"]}');
+    // if(outputStatus=="0 Touches")
       showNotification();
     isDetecting = false;
   }
@@ -60,5 +68,6 @@ void showNotification()async{
 
 
   void stopServices(){
-    camera.stopImageStream();
+    // camera.stopImageStream();//TODO
+    AndroidAlarmManager.cancel(0);
   }
