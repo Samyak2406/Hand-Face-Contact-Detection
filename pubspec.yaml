@@ -16,7 +16,8 @@ dependencies:
   flutter_local_notifications: ^1.4.4+1
   android_alarm_manager: ^0.4.5+11
   device_info: ^0.4.2+4
-
+  data_connection_checker: ^0.3.4
+  connectivity: ^0.4.9
   
 dev_dependencies:
   flutter_test:
