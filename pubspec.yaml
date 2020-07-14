@@ -18,6 +18,8 @@ dependencies:
   device_info: ^0.4.2+4
   data_connection_checker: ^0.3.4
   connectivity: ^0.4.9
+  firebase_core: ^0.4.5
+  cloud_firestore: ^0.13.7
   
 dev_dependencies:
   flutter_test:

@@ -1,10 +1,8 @@
-import 'dart:io';
 import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:tflite/tflite.dart';
 import 'services_ui.dart';
-import 'package:device_info/device_info.dart';
 
 void showNotification()async{
     var androidChannelSpecifics=AndroidNotificationDetails('channelId', 'channelName', 'channelDescription',importance: Importance.Max,priority: Priority.High);
@@ -71,21 +69,7 @@ void showNotification()async{
 
 
   void stopServices(){
-    // camera.stopImageStream();//TODO
-    AndroidAlarmManager.cancel(0);
+    camera.stopImageStream();//TODO
+    // AndroidAlarmManager.cancel(0);
   }
 
-  Future<void> deviceId()async{
-    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    if(Platform.isAndroid){
-      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-      String deviceId=androidInfo.fingerprint;
-    }
-    else if(Platform.isIOS){
-      IosDeviceInfo iosInfo= await deviceInfo.iosInfo;
-      String deviceId = iosInfo.identifierForVendor.toString();//TODO
-    }
-    else{
-      //TODO Invalid platform
-    }
-  }
