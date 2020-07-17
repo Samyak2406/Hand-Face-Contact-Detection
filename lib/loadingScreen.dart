@@ -43,6 +43,7 @@ Future<void> authenticate() async{
   },
   merge: true
   );
+  //Todo
   // _store.collection('Ids').document('list');
   // if exists: 
   // check validity
