@@ -20,6 +20,13 @@ class reports extends StatelessWidget {
                   animation: true,
                   animationDuration: 2000,
                   progressColor: Colors.green,
+                  center: Text(
+                    "85%",//TODO: Show percentage indicator
+                    style: TextStyle(
+                      fontSize: 40
+                    ),
+                    ),
+                  lineWidth: 15,
                 ),
               ),
             ),
@@ -36,9 +43,25 @@ class reports extends StatelessWidget {
                       Expanded(
                         flex: 2,
                         child: Center(
-                          child: Container(
-                            width: MediaQuery.of(context).size.width / 3,
-                            color: Colors.redAccent,
+                          child: Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: Container(
+                              height: double.infinity,
+                              width: MediaQuery.of(context).size.width * 0.7,
+                              color: Colors.redAccent,
+                              child: Center(
+                                child: FittedBox(
+                                  child: Text(
+                                    'Alert!', //TODO
+                                    style: TextStyle(
+                                      fontSize: 5000,
+                                      fontWeight: FontWeight.w200,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -55,19 +78,40 @@ class reports extends StatelessWidget {
                         child: SizedBox(),
                       ),
                       Expanded(
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                color: Colors.red,
+                        flex: 2,
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 20, right: 20),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: (){
+                                    //TODO: Show me reports
+                                  },
+                                  child: Container(
+                                    height: double.infinity,
+                                    color: Colors.blue,
+                                    child: Center(
+                                      child: FractionallySizedBox(
+                                        heightFactor: 0.5,
+                                        widthFactor: 0.4,
+                                        child: FittedBox(
+                                          child: Text(
+                                            'Reports',
+                                            style: TextStyle(
+                                              fontSize: 4000,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w200
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                            Expanded(
-                              child: Container(
-                                color: Colors.blue,
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                       Expanded(
